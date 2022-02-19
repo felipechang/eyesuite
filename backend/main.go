@@ -78,9 +78,6 @@ func main() {
 	router.POST("/logout" /*m.Auth,*/, c.Logout)
 	router.POST("/refresh" /*m.Auth,*/, c.Refresh)
 
-	// Read image with Tesseract
-	router.POST("/readImage" /*m.Auth,*/, c.ReadImageText)
-
 	// Post results to Netsuite
 	router.POST("/postImage" /*m.Auth,*/, c.PostImage)
 
@@ -99,6 +96,9 @@ func main() {
 	// Manage Plugins
 	router.GET("/plugins" /*m.Auth, m.Admin,*/, c.ReadPlugins)
 	router.POST("/plugins" /*m.Auth, m.Admin,*/, c.UpsertPlugins)
+
+	// Read image with Tesseract
+	router.POST("/plugins/readText" /*m.Auth,*/, c.ReadImageText)
 
 	// API Home
 	router.GET("/", c.ApiHome)

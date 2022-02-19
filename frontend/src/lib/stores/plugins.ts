@@ -12,7 +12,14 @@ function createStore() {
                 return e.name === name;
             });
             if (!p) {
-                return {name: "", description: "", enabled: false, mapping: []}
+                return {
+                    name: "",
+                    description: "",
+                    endpoint: "",
+                    endpointField: "",
+                    enabled: false,
+                    mapping: []
+                }
             }
             return p;
         },

@@ -43,9 +43,11 @@ func prePlugin() {
 	}
 	var x []storage.Plugin
 	x = append(x, storage.Plugin{
-		Name:        "OCR Reader",
-		Description: "Reads text from an image",
-		Enabled:     true,
+		Name:          "OCR Reader",
+		Description:   "Reads text from an image",
+		Enabled:       true,
+		Endpoint:      "/plugins/readText",
+		EndpointField: "ocr-text",
 		Mapping: []storage.ProfileMapping{{
 			LabelText:   "OCR Result",
 			Name:        "ocr-text",
@@ -56,9 +58,11 @@ func prePlugin() {
 		}},
 	})
 	x = append(x, storage.Plugin{
-		Name:        "Barcode Reader",
-		Description: "Reads barcodes as text",
-		Enabled:     true,
+		Name:          "Barcode Reader",
+		Description:   "Reads barcodes as text",
+		Endpoint:      "/plugins/readBarcode",
+		EndpointField: "barcode-text",
+		Enabled:       true,
 		Mapping: []storage.ProfileMapping{{
 			LabelText:   "Barcode Result",
 			Name:        "barcode-text",
@@ -94,7 +98,7 @@ func preProfile() {
 						<ns8:attachFrom xsi:type="ns9:FileAttachFrom" xmlns:ns9="urn:types.filecabinet_{{.Version}}.documents.webservices.netsuite.com">_computer</ns8:attachFrom>
 						<ns8:content>{{.FileContent}}</ns8:content>
 						<ns8:folder internalId="{{.folder}}" xsi:type="ns10:RecordRef" xmlns:ns10="urn:core_{{.Version}}.platform.webservices.netsuite.com"/>
-						<ns8:description xsi:type="xsd:string">{{.Ocr}}</ns8:description>
+						<ns8:description xsi:type="xsd:string">{{.ocr-text}}</ns8:description>
 					</record>
 				</add>`,
 		Mapping: []storage.ProfileMapping{{

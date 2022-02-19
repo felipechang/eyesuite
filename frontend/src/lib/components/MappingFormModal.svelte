@@ -1,6 +1,7 @@
 <ComposedModal
         bind:open
         on:close={handleClose}
+        size="lg"
 >
     <ModalBody hasForm>
         <Grid>
@@ -19,76 +20,103 @@
                     <p>{enabled ? "Add/Edit" : "View"} profile mappings</p>
                 </Column>
             </Row>
-            <Row>
-                <Column style="padding-bottom: 10px">Label</Column>
-                <Column style="padding-bottom: 10px">Name</Column>
-                <Column style="padding-bottom: 10px">Value</Column>
-                <Column style="padding-bottom: 10px">Placeholder</Column>
-                <Column style="padding-bottom: 10px">Read-only</Column>
-                <Column style="padding-bottom: 10px">Hidden</Column>
-                {#if enabled}
-                    <Column style="padding-bottom: 10px">
-                        {mapping.length === 0 ? "Add" : "Remove"} Line
-                    </Column>
-                {/if}
-            </Row>
             {#if mapping.length === 0 && enabled}
                 <Row>
-                    <Column style="padding-bottom: 10px">
-                        <TextInput bind:value={map.labelText} required/>
+                    <Column style="min-width: 20%">
+                        <TextInput
+                                labelText="Label"
+                                bind:value={map.labelText}
+                                required
+                        />
                     </Column>
-                    <Column style="padding-bottom: 10px">
-                        <TextInput bind:value={map.name} required/>
+                    <Column>
+                        <TextInput
+                                labelText="Name"
+                                bind:value={map.name}
+                                required
+                        />
                     </Column>
-                    <Column style="padding-bottom: 10px">
-                        <TextInput bind:value={map.value} required/>
+                    <Column>
+                        <TextInput
+                                labelText="Value"
+                                bind:value={map.value}
+                                required
+                        />
                     </Column>
-                    <Column style="padding-bottom: 10px">
-                        <TextInput bind:value={map.placeholder} required/>
+                    <Column style="min-width: 25%">
+                        <TextInput
+                                labelText="Placeholder"
+                                bind:value={map.placeholder}
+                                required
+                        />
                     </Column>
-                    <Column style="padding-bottom: 10px">
+                    <Column style="max-width: 80px">
                         <Checkbox
+                                labelText="Read Only"
                                 checked="{map.readonly ? 'checked': ''}"
                                 on:change={map.readonly = !map.readonly}/>
                     </Column>
-                    <Column style="padding-bottom: 10px">
+                    <Column style="max-width: 80px">
                         <Checkbox
+                                labelText="Hidde"
                                 checked="{map.hidden ? 'checked': ''}"
-                                on:change={map.readonly = !map.readonly}/>
+                                on:change={map.hidden = !map.hidden}/>
                     </Column>
-                    <Column style="padding-bottom: 10px">
+                    <Column>
                         <AddAlt24 class="clickable" on:click={()=>handleAdd(map)}/>
                     </Column>
                 </Row>
             {:else}
                 {#each mapping as m}
                     <Row>
-                        <Column style="padding-bottom: 10px">
-                            <TextInput disabled="{!enabled}" bind:value={m.labelText} required/>
+                        <Column style="min-width: 20%">
+                            <TextInput
+                                    labelText="Label"
+                                    disabled="{!enabled}"
+                                    bind:value={m.labelText}
+                                    required
+                            />
                         </Column>
-                        <Column style="padding-bottom: 10px">
-                            <TextInput disabled="{!enabled}" bind:value={m.name} required/>
+                        <Column>
+                            <TextInput
+                                    labelText="Name"
+                                    disabled="{!enabled}"
+                                    bind:value={m.name}
+                                    required
+                            />
                         </Column>
-                        <Column style="padding-bottom: 10px">
-                            <TextInput disabled="{!enabled}" bind:value={m.value} required/>
+                        <Column>
+                            <TextInput
+                                    labelText="Value"
+                                    disabled="{!enabled}"
+                                    bind:value={m.value}
+                                    required
+                            />
                         </Column>
-                        <Column style="padding-bottom: 10px">
-                            <TextInput disabled="{!enabled}" bind:value={m.placeholder} required/>
+                        <Column style="min-width: 25%">
+                            <TextInput
+                                    labelText="Placeholder"
+                                    disabled="{!enabled}"
+                                    bind:value={m.placeholder}
+                                    required
+                            />
                         </Column>
-                        <Column style="padding-bottom: 10px">
+                        <Column style="max-width: 80px">
                             <Checkbox
+                                    labelText="Read Only"
                                     disabled="{!enabled}"
                                     checked="{m.readonly ? 'checked': ''}"
                                     on:change={m.readonly = !m.readonly}/>
                         </Column>
-                        <Column style="padding-bottom: 10px">
+                        <Column style="max-width: 80px">
                             <Checkbox
+                                    labelText="Hidden"
                                     disabled="{!enabled}"
                                     checked="{m.hidden ? 'checked': ''}"
                                     on:change={()=>m.hidden = !m.hidden}/>
                         </Column>
                         {#if enabled}
-                            <Column style="padding-bottom: 10px">
+                            <Column>
                                 <TrashCan24 class="clickable" on:click={()=>handleDelete(m)}/>
                             </Column>
                         {/if}

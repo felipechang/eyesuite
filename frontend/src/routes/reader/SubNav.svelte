@@ -22,27 +22,24 @@
 <script lang="ts">
     import {Column, Row, Select, SelectItem} from "carbon-components-svelte";
     import {profileListStore} from "$lib/stores/profiles";
+    import {pluginListStore} from "$lib/stores/plugins";
     import Title from "$lib/components/Title.svelte";
     import {onMount} from "svelte";
-    import {pluginListStore} from "$lib/stores/plugins";
 
     export let profileSelected;
+    export let pluginLink;
+    export let pluginField;
+    export let template;
     export let mappings;
 
-    let profiles = [];
-    let plugins = [];
     let current;
+    let profiles = profileListStore.init();
+    let plugins = pluginListStore.init();
 
     onMount(async () => {
-
-        if (profiles.length !== 0) {
-            return;
-        }
-
-        // filter disabled plugins
-        plugins = await pluginListStore.mount()
-        let profileList = await profileListStore.mount()
-        profiles = profileList.filter((p) => {
+        plugins = await pluginListStore.mount();
+        profiles = (await profileListStore.mount()).filter((p) => {
+            // filter disabled plugins
             for (let i = 0; i < plugins.length; i++) {
                 if (p.plugin === plugins[i].name) {
                     return plugins[i].enabled;
@@ -58,19 +55,28 @@
 
     /** handleSelectChange export selected profile name */
     const handleSelectChange = (e) => {
-        profileSelected = e.target.value;
-        localStorage.setItem("profile-selected", profileSelected);
-        updateSelectChange(profileSelected);
+        if (!e.target.value) {
+            profileSelected = "";
+            pluginLink = "";
+            pluginField = "";
+            mappings = [];
+            return;
+        }
+        localStorage.setItem("profile-selected", e.target.value);
+        updateSelectChange(e.target.value);
     }
 
     /** updateSelectChange update reader selection */
-    const updateSelectChange = (p) => {
-        profileSelected = p;
-        const e = profileListStore.findOne(profiles, p);
+    const updateSelectChange = (profileName) => {
+        profileSelected = profileName;
+        const e = profileListStore.findOne(profiles, profileName);
         if (!e.plugin) {
             return;
         }
         const f = pluginListStore.findOne(plugins, e.plugin);
         mappings = e.mapping.concat(f.enabled ? f.mapping : []);
+        pluginLink = f.endpoint;
+        template = e.template;
+        pluginField = f.endpointField;
     }
 </script>

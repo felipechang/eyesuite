@@ -6,10 +6,12 @@ import (
 )
 
 type Plugin struct {
-	Name        string           `json:"name"`
-	Description string           `json:"description"`
-	Enabled     bool             `json:"enabled"`
-	Mapping     []ProfileMapping `json:"mapping"`
+	Name          string           `json:"name"`
+	Description   string           `json:"description"`
+	Enabled       bool             `json:"enabled"`
+	Mapping       []ProfileMapping `json:"mapping"`
+	Endpoint      string           `json:"endpoint"`
+	EndpointField string           `json:"endpointField"`
 }
 
 const PLUGINS = "plugins"

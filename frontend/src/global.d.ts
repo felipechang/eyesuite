@@ -23,6 +23,8 @@ interface IPluginInit {
     name: string
     description: string
     enabled: boolean
+    endpoint: string
+    endpointField: string
     mapping: IMapping[]
 }
 

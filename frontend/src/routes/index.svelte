@@ -1,9 +1,27 @@
 {#if connectionStore.validate(connection)}
     <Grid>
-        <SubNav bind:mappings={mappings} bind:profileSelected="{profileSelected}"/>
+        <SubNav
+                bind:mappings={mappings}
+                bind:profileSelected="{profileSelected}"
+                bind:pluginLink="{pluginLink}"
+                bind:pluginField="{pluginField}"
+                bind:template="{template}"
+        />
         {#if profileSelected}
-            <Camera/>
-            <Form mappings={mappings}/>
+            <Camera
+                    success={success}
+                    bind:files="{files}"
+            />
+            {#if files}
+                <Form
+                        mappings={mappings}
+                        pluginLink="{pluginLink}"
+                        pluginField="{pluginField}"
+                        template="{template}"
+                        files="{files}"
+                        bind:success="{success}"
+                />
+            {/if}
         {/if}
     </Grid>
 {:else}
@@ -19,9 +37,14 @@
     import {onMount} from "svelte";
 
     let profileSelected = "";
-    let mappings = [];
-    let connection = connectionStore.init();
-    connectionStore.subscribe((c) => connection = c);
-    onMount(async () => connection = await connectionStore.mount());
+    let pluginLink = "";
+    let pluginField = "";
+    let template = "";
+    let files = "";
+    let success = "";
 
+    let mappings = [];
+
+    let connection = connectionStore.init();
+    onMount(async () => connection = await connectionStore.mount());
 </script>

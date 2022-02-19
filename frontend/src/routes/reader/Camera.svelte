@@ -2,6 +2,14 @@
 <Row>
     <Column/>
     <Column>
+        {#if success !== ""}
+            <InlineNotification
+                    kind="success"
+                    title="Success:"
+                    subtitle={success}
+                    on:close={handleMessageClose}
+            />
+        {/if}
         {#if avatar}
             <ImageLoader fadeIn src="{avatar}"/>
         {:else}
@@ -22,11 +30,19 @@
 
 <script>
     import CameraPic from "carbon-pictograms-svelte/lib/Camera.svelte";
-    import {Column, ImageLoader, Row} from "carbon-components-svelte";
+    import {Column, ImageLoader, InlineNotification, Row} from "carbon-components-svelte";
+
+    export let files;
+    export let success;
 
     let avatar;
-    let files;
+    $:avatar = success ? "" : avatar;
+
     let fileInput;
+
+    const handleMessageClose = () => {
+        success = "";
+    }
 
     /** fileClick Simulate a file click */
     const fileClick = () => {

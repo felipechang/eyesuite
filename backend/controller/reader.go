@@ -82,7 +82,7 @@ func (o *controller) PostImage(c *gin.Context) {
 	settings := suitetalk.NewSettings(config)
 	upload, err := suitetalk.Upload(settings, file)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, Error(err.Error()))
+		c.JSON(http.StatusBadRequest, Error(err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, Success(upload))
