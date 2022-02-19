@@ -1,12 +1,12 @@
 /// <reference types="@sveltejs/kit" />
 
 interface IMapping {
+    labelText: string
     name: string
-    id: string
-    type: string
-    value?: string;
+    value: string
     placeholder: string
     readonly: boolean
+    hidden: boolean
 }
 
 interface IConnectionInit {

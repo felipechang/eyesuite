@@ -5,13 +5,15 @@
                 {#each fields as field}
                     <Row>
                         <Column style="padding-bottom: 10px">
-                            <TextInput
-                                    labelText="{field.label}"
-                                    name="{field.name}"
-                                    type="{field.type}"
-                                    bind:value="{field.value}"
-                                    required
-                            />
+                            <span style="display: {field.hidden ? 'none' : 'initial'}">
+                               <TextInput
+                                       labelText="{field.labelText}"
+                                       name="{field.name}"
+                                       placeholder="{field.placeholder}"
+                                       bind:value="{field.value}"
+                                       readonly="{field.readonly}"
+                               />
+                            </span>
                         </Column>
                     </Row>
                 {/each}

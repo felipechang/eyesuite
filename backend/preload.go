@@ -47,11 +47,11 @@ func prePlugin() {
 		Description: "Reads text from an image",
 		Enabled:     true,
 		Mapping: []storage.ProfileMapping{{
-			Name:        "Ocr",
-			Id:          "ocr-text",
-			Type:        "text",
+			LabelText:   "OCR Result",
+			Name:        "ocr-text",
 			Value:       "",
 			Placeholder: "",
+			Hidden:      false,
 			Readonly:    true,
 		}},
 	})
@@ -60,11 +60,11 @@ func prePlugin() {
 		Description: "Reads barcodes as text",
 		Enabled:     true,
 		Mapping: []storage.ProfileMapping{{
-			Name:        "Barcode",
-			Id:          "barcode-text",
-			Type:        "text",
+			LabelText:   "Barcode Result",
+			Name:        "barcode-text",
 			Value:       "",
 			Placeholder: "",
+			Hidden:      false,
 			Readonly:    true,
 		}},
 	})
@@ -98,11 +98,11 @@ func preProfile() {
 					</record>
 				</add>`,
 		Mapping: []storage.ProfileMapping{{
-			Name:        "NetSuite Folder",
-			Id:          "folder",
-			Type:        "text",
+			LabelText:   "NetSuite Folder",
+			Name:        "folder",
 			Value:       "-10",
 			Placeholder: "Set Netsuite Folder",
+			Hidden:      false,
 			Readonly:    false,
 		}},
 		Plugin: "OCR Reader",

@@ -13,12 +13,12 @@ type Profile struct {
 }
 
 type ProfileMapping struct {
+	LabelText   string `json:"labelText"`
 	Name        string `json:"name"`
-	Id          string `json:"id"`
-	Type        string `json:"type"`
 	Value       string `json:"value"`
 	Placeholder string `json:"placeholder"`
 	Readonly    bool   `json:"readonly"`
+	Hidden      bool   `json:"hidden"`
 }
 
 const PROFILES = "profiles"

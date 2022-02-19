@@ -20,9 +20,12 @@
                 </Column>
             </Row>
             <Row>
-                <Column style="padding-bottom: 10px">Field Label</Column>
-                <Column style="padding-bottom: 10px">Field Name</Column>
-                <Column style="padding-bottom: 10px">Field Type</Column>
+                <Column style="padding-bottom: 10px">Label</Column>
+                <Column style="padding-bottom: 10px">Name</Column>
+                <Column style="padding-bottom: 10px">Value</Column>
+                <Column style="padding-bottom: 10px">Placeholder</Column>
+                <Column style="padding-bottom: 10px">Read-only</Column>
+                <Column style="padding-bottom: 10px">Hidden</Column>
                 {#if enabled}
                     <Column style="padding-bottom: 10px">
                         {mapping.length === 0 ? "Add" : "Remove"} Line
@@ -32,13 +35,26 @@
             {#if mapping.length === 0 && enabled}
                 <Row>
                     <Column style="padding-bottom: 10px">
+                        <TextInput bind:value={map.labelText} required/>
+                    </Column>
+                    <Column style="padding-bottom: 10px">
                         <TextInput bind:value={map.name} required/>
                     </Column>
                     <Column style="padding-bottom: 10px">
-                        <TextInput bind:value={map.id} required/>
+                        <TextInput bind:value={map.value} required/>
                     </Column>
                     <Column style="padding-bottom: 10px">
-                        <TextInput bind:value={map.type} required/>
+                        <TextInput bind:value={map.placeholder} required/>
+                    </Column>
+                    <Column style="padding-bottom: 10px">
+                        <Checkbox
+                                checked="{map.readonly ? 'checked': ''}"
+                                on:change={map.readonly = !map.readonly}/>
+                    </Column>
+                    <Column style="padding-bottom: 10px">
+                        <Checkbox
+                                checked="{map.hidden ? 'checked': ''}"
+                                on:change={map.readonly = !map.readonly}/>
                     </Column>
                     <Column style="padding-bottom: 10px">
                         <AddAlt24 class="clickable" on:click={()=>handleAdd(map)}/>
@@ -48,13 +64,28 @@
                 {#each mapping as m}
                     <Row>
                         <Column style="padding-bottom: 10px">
+                            <TextInput disabled="{!enabled}" bind:value={m.labelText} required/>
+                        </Column>
+                        <Column style="padding-bottom: 10px">
                             <TextInput disabled="{!enabled}" bind:value={m.name} required/>
                         </Column>
                         <Column style="padding-bottom: 10px">
-                            <TextInput disabled="{!enabled}" bind:value={m.id} required/>
+                            <TextInput disabled="{!enabled}" bind:value={m.value} required/>
                         </Column>
                         <Column style="padding-bottom: 10px">
-                            <TextInput disabled="{!enabled}" bind:value={m.type} required/>
+                            <TextInput disabled="{!enabled}" bind:value={m.placeholder} required/>
+                        </Column>
+                        <Column style="padding-bottom: 10px">
+                            <Checkbox
+                                    disabled="{!enabled}"
+                                    checked="{m.readonly ? 'checked': ''}"
+                                    on:change={m.readonly = !m.readonly}/>
+                        </Column>
+                        <Column style="padding-bottom: 10px">
+                            <Checkbox
+                                    disabled="{!enabled}"
+                                    checked="{m.hidden ? 'checked': ''}"
+                                    on:change={()=>m.hidden = !m.hidden}/>
                         </Column>
                         {#if enabled}
                             <Column style="padding-bottom: 10px">
@@ -69,7 +100,7 @@
 </ComposedModal>
 
 <script>
-    import {Column, ComposedModal, Grid, ModalBody, Row, TextInput} from "carbon-components-svelte";
+    import {Checkbox, Column, ComposedModal, Grid, ModalBody, Row, TextInput} from "carbon-components-svelte";
     import {AddAlt24, AddFilled24, TrashCan24} from "carbon-icons-svelte";
 
     export let open;
@@ -78,16 +109,22 @@
     export let mapping;
 
     let map = {
+        labelText: "",
         name: "",
-        id: "",
-        type: "",
+        value: "",
+        placeholder: "",
+        readonly: false,
+        hidden: false,
     };
 
     const addNewLine = () => {
         mapping.push({
-            id: "",
+            labelText: "",
             name: "",
-            type: "",
+            value: "",
+            placeholder: "",
+            readonly: false,
+            hidden: false,
         });
         mapping = mapping;
         handleUpdate();
@@ -95,13 +132,13 @@
 
     const handleClose = () => {
         mapping = mapping.filter((e) => {
-            return e.id && e.name && e.type
+            return e.labelText && e.name
         });
         handleUpdate();
     }
 
     const handleAdd = (m) => {
-        if (m.name && m.id && m.type) {
+        if (m.labelText && m.name) {
             mapping.push(m);
             mapping = mapping;
         }
