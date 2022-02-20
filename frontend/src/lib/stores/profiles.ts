@@ -1,8 +1,9 @@
 import {writable} from "svelte/store";
+import {getServer, postServer} from "$lib/stores/wrapper";
 
 const init: IProfileInit[] = [];
 
-const ENDPOINT = "http://localhost:5000/profiles";
+const ENDPOINT = "/profiles";
 
 function createStore() {
     const {subscribe, set} = writable(init);
@@ -18,16 +19,13 @@ function createStore() {
         },
         init: (): IProfileInit[] => init,
         mount: async () => {
-            const response = await fetch(ENDPOINT);
+            const response = await getServer(ENDPOINT);
             const data = await response.json();
             return data.data;
         },
         subscribe,
         persist: async (profiles: IProfileInit[]) => {
-            const response = await fetch(ENDPOINT, {
-                method: 'POST',
-                body: JSON.stringify(profiles)
-            })
+            const response = await postServer(ENDPOINT, JSON.stringify(profiles));
             const data = await response.json();
             set(data.data);
         },

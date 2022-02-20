@@ -14,7 +14,7 @@ type UserLogin struct {
 	Password string `json:"password"`
 }
 type UserResponse struct {
-	IsAdmin      bool   `json:"admin"`
+	Control      string `json:"control"`
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
@@ -31,8 +31,14 @@ func (o *controller) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, Error(err.Error()))
 		return
 	}
+	var control = user.Name
+	if user.Admin {
+		control = control + "1"
+	} else {
+		control = control + "0"
+	}
 	c.JSON(http.StatusOK, Success(&UserResponse{
-		IsAdmin:      user.Admin,
+		Control:      base64.StdEncoding.EncodeToString([]byte(control)),
 		AccessToken:  user.AccessToken,
 		RefreshToken: user.RefreshToken,
 	}))

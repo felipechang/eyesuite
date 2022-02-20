@@ -26,7 +26,7 @@ func (m *middleware) Auth(c *gin.Context) {
 	// find and evaluate refresh token
 	key, err = m.evaluateRefreshKey(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, controller.Error(err.Error()))
+		c.JSON(http.StatusUnauthorized, controller.Error(err.Error()))
 		c.Abort()
 		return
 	}

@@ -4,11 +4,11 @@
         <TextInput bind:value={user.name} on:change={()=>usersStore.persist(users)} required/>
     </StructuredListCell>
     <StructuredListCell>
-        <Checkbox on:change={()=>handleEnableChange(user)}
-                  checked="{user.enabled ? 'checked': ''}"/>
+        <Checkbox checked="{user.enabled ? 'checked': ''}"
+                  on:change={()=>handleEnableChange(user)}/>
     </StructuredListCell>
     <StructuredListCell>
-        <Checkbox on:change={()=>handleAdminChange(user)} checked="{user.admin ? 'checked': ''}"/>
+        <Checkbox checked="{user.admin ? 'checked': ''}" on:change={()=>handleAdminChange(user)}/>
     </StructuredListCell>
     <StructuredListCell>{user.key}</StructuredListCell>
     <StructuredListCell>

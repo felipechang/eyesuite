@@ -31,9 +31,9 @@
                     {/if}
                     <Column style="text-align: center; width: 300px; padding-top: 10px">
                         <Button
-                                style="width: 25%"
                                 icon={Upload16}
                                 on:click={handleImageSubmit}
+                                style="width: 25%"
                         >
                             Submit
                         </Button>
@@ -56,6 +56,8 @@
     export let template;
     export let files;
     export let success;
+    export let loadMappings;
+    export let updateSelectChange;
 
     let fields;
     $:fields = mappings.map((e) => {
@@ -73,6 +75,8 @@
         const res = await readerStore.submit(template, files);
         if (!res.error) {
             success = res.msg;
+            await loadMappings();
+            updateSelectChange(localStorage.getItem("profile-selected"));
         } else {
             success = "";
             errorStore.set({

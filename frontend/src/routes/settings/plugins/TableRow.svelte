@@ -8,10 +8,10 @@
     <StructuredListCell>
         <Button on:click={()=>(open=!open)}>View</Button>
         <MappingFormModal
+                enabled="{false}"
                 handleUpdate="{handleUpdate}"
                 mapping="{plugin.mapping}"
                 open="{open}"
-                enabled="{false}"
         />
     </StructuredListCell>
 </StructuredListRow>

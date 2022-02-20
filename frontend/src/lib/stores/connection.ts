@@ -1,4 +1,5 @@
 import {writable} from "svelte/store";
+import {getServer, postServer} from "$lib/stores/wrapper";
 
 const init: IConnectionInit = {
     version: "",
@@ -10,23 +11,20 @@ const init: IConnectionInit = {
     token_secret: "",
 };
 
-const ENDPOINT = "http://localhost:5000/config";
+const ENDPOINT = "/config";
 
 function createStore() {
     const {subscribe, set} = writable(init);
     return {
         init: (): IConnectionInit => init,
         mount: async () => {
-            const response = await fetch(ENDPOINT);
+            const response = await getServer(ENDPOINT);
             const data = await response.json();
             return data.data;
         },
         subscribe,
         persist: async (connection: IConnectionInit) => {
-            const response = await fetch(ENDPOINT, {
-                method: 'POST',
-                body: JSON.stringify(connection)
-            })
+            const response = await postServer(ENDPOINT, JSON.stringify(connection));
             const data = await response.json();
             set(data.data);
         },

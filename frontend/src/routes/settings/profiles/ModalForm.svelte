@@ -13,8 +13,8 @@
             <Row>
                 <Column style="padding-bottom: 10px">
                     <TextInput
-                            labelText="Name"
                             bind:value={profile.name}
+                            labelText="Name"
                             on:change={handleProfileChange}
                             required
                     />
@@ -42,10 +42,10 @@
     </FluidForm>
 </Modal>
 <MappingFormModal
-        handleUpdate="{handleModalUpdate}"
         bind:mapping="{mapping}"
-        open="{openModal}"
         enabled
+        handleUpdate="{handleModalUpdate}"
+        open="{openModal}"
 />
 
 <script lang="ts">

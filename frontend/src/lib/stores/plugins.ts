@@ -1,8 +1,9 @@
 import {writable} from "svelte/store";
+import {getServer, postServer} from "$lib/stores/wrapper";
 
 const init: IPluginInit[] = [];
 
-const ENDPOINT = "http://localhost:5000/plugins";
+const ENDPOINT = "/plugins";
 
 function createStore() {
     const {subscribe, set} = writable(init);
@@ -25,16 +26,13 @@ function createStore() {
         },
         init: (): IPluginInit[] => init,
         mount: async () => {
-            const response = await fetch(ENDPOINT);
+            const response = await getServer(ENDPOINT);
             const data = await response.json();
             return data.data;
         },
         subscribe,
         persist: async (plugins: IPluginInit[]) => {
-            const response = await fetch(ENDPOINT, {
-                method: 'POST',
-                body: JSON.stringify(plugins)
-            })
+            const response = await postServer(ENDPOINT, JSON.stringify(plugins));
             const data = await response.json();
             set(data.data);
         },

@@ -1,11 +1,9 @@
 {#if connectionStore.validate(connection)}
     <Grid>
         <SubNav
-                bind:mappings={mappings}
-                bind:profileSelected="{profileSelected}"
-                bind:pluginLink="{pluginLink}"
-                bind:pluginField="{pluginField}"
-                bind:template="{template}"
+                profiles="{profiles}"
+                loadMappings="{loadMappings}"
+                updateSelectChange="{updateSelectChange}"
         />
         {#if profileSelected}
             <Camera
@@ -20,6 +18,8 @@
                         template="{template}"
                         files="{files}"
                         bind:success="{success}"
+                        loadMappings="{loadMappings}"
+                        updateSelectChange="{updateSelectChange}"
                 />
             {/if}
         {/if}
@@ -35,6 +35,8 @@
     import SubNav from "./reader/SubNav.svelte";
     import Form from "./reader/Form.svelte";
     import {onMount} from "svelte";
+    import {pluginListStore} from "$lib/stores/plugins";
+    import {profileListStore} from "$lib/stores/profiles";
 
     let profileSelected = "";
     let pluginLink = "";
@@ -46,5 +48,44 @@
     let mappings = [];
 
     let connection = connectionStore.init();
-    onMount(async () => connection = await connectionStore.mount());
+    let profiles = profileListStore.init();
+    let plugins = pluginListStore.init();
+
+    const loadMappings = async () => {
+        plugins = await pluginListStore.mount();
+        profiles = (await profileListStore.mount()).filter((p) => {
+            // filter disabled plugins
+            for (let i = 0; i < plugins.length; i++) {
+                if (p.plugin === plugins[i].name) {
+                    return plugins[i].enabled;
+                }
+            }
+            return false;
+        });
+    }
+
+    /** updateSelectChange update reader selection */
+    const updateSelectChange = (profileName) => {
+        if (!profileName) {
+            profileSelected = "";
+            pluginLink = "";
+            pluginField = "";
+            mappings = [];
+            return;
+        }
+        profileSelected = profileName;
+        const e = profileListStore.findOne(profiles, profileName);
+        if (!e.plugin) {
+            return;
+        }
+        const f = pluginListStore.findOne(plugins, e.plugin);
+        mappings = e.mapping.concat(f.enabled ? f.mapping : []);
+        pluginLink = f.endpoint;
+        template = e.template;
+        pluginField = f.endpointField;
+    }
+
+    onMount(async () => {
+        connection = await connectionStore.mount()
+    });
 </script>

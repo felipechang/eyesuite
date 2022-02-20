@@ -6,7 +6,7 @@
             name="Users"
     />
     <Table users="{users}"/>
-    <ModalForm users="{users}" bind:open={open}/>
+    <ModalForm bind:open={open} users="{users}"/>
 </Grid>
 
 <script lang="ts">

@@ -3,19 +3,19 @@
         {profile.name}
     </StructuredListCell>
     <StructuredListCell>
-        <PluginSelector handleUpdate="{handleUpdate}" bind:profile="{profile}"/>
+        <PluginSelector bind:profile="{profile}" handleUpdate="{handleUpdate}"/>
     </StructuredListCell>
     <StructuredListCell>
         <Button on:click={()=>(open=!open)}>Edit</Button>
         <MappingFormModal
-                handleUpdate="{handleModalUpdate}"
                 bind:mapping="{mapping}"
-                open="{open}"
                 enabled
+                handleUpdate="{handleModalUpdate}"
+                open="{open}"
         />
     </StructuredListCell>
     <StructuredListCell>
-        <TextArea on:change={handleUpdate} bind:value="{profile.template}"/>
+        <TextArea bind:value="{profile.template}" on:change={handleUpdate}/>
     </StructuredListCell>
     <StructuredListCell>
         <TrashCan24 class="clickable" on:click={()=>handleDelete(profile)}/>

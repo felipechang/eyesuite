@@ -14,8 +14,8 @@
             <Row>
                 <Column style="padding-bottom: 10px">
                     <TextInput
-                            labelText="Username"
                             bind:value={user.username}
+                            labelText="Username"
                             on:change={handleUsernameChange}
                             required
                     />
@@ -25,8 +25,8 @@
             <Row>
                 <Column style="padding-bottom: 10px">
                     <TextInput
-                            labelText="Full Name"
                             bind:value={user.name}
+                            labelText="Full Name"
                             required
                     />
                 </Column>
@@ -34,8 +34,8 @@
             <Row>
                 <Column style="padding-bottom: 10px">
                     <PasswordInput
-                            labelText="Password"
                             bind:value={user.password}
+                            labelText="Password"
                             required
                             type="password"
                     />
@@ -44,16 +44,16 @@
             <Row>
                 <Column style="padding-bottom: 10px">
                     <Checkbox
-                            labelText="Enabled"
                             checked="{user.enabled ? 'checked': ''}"
+                            labelText="Enabled"
                             on:change={handleEnabledChange}/>
                 </Column>
             </Row>
             <Row>
                 <Column style="padding-bottom: 10px">
                     <Checkbox
-                            labelText="Administrator"
                             checked="{user.admin ? 'checked': ''}"
+                            labelText="Administrator"
                             on:change={handleAdminChange}/>
                 </Column>
             </Row>

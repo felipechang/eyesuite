@@ -6,7 +6,7 @@
             name="Reader Profiles"
     />
     <Table profiles="{profiles}"/>
-    <ModalForm profiles="{profiles}" bind:open={open}/>
+    <ModalForm bind:open={open} profiles="{profiles}"/>
 </Grid>
 
 <script lang="ts">

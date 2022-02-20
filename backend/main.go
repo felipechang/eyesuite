@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gitlab.com/hardcake/eyesuite/controller"
+	"gitlab.com/hardcake/eyesuite/middleware"
 	"gitlab.com/hardcake/eyesuite/server"
 	"gitlab.com/hardcake/eyesuite/service"
 	"gitlab.com/hardcake/eyesuite/service/storage"
@@ -50,7 +51,7 @@ func init() {
 func main() {
 
 	s := service.NewService(sto, tes, tok)
-	//m := middleware.NewMiddleware(s)
+	m := middleware.NewMiddleware(s)
 	c := controller.NewController(s)
 
 	gin.SetMode(gin.ReleaseMode)
@@ -75,30 +76,30 @@ func main() {
 	// JWT management
 	router.POST("/login", c.Login)
 
-	router.POST("/logout" /*m.Auth,*/, c.Logout)
-	router.POST("/refresh" /*m.Auth,*/, c.Refresh)
+	router.POST("/logout", m.Auth, c.Logout)
+	router.POST("/refresh", m.Auth, c.Refresh)
 
 	// Post results to Netsuite
-	router.POST("/postImage" /*m.Auth,*/, c.PostImage)
+	router.POST("/postImage", m.Auth, c.PostImage)
 
 	// Manage Users
-	router.GET("/users" /*m.Auth, m.Admin,*/, c.ReadUsers)
-	router.POST("/users" /*m.Auth, m.Admin,*/, c.UpsertUsers)
+	router.GET("/users", m.Auth, c.ReadUsers)
+	router.POST("/users", m.Auth, m.Admin, c.UpsertUsers)
 
 	// Manage Configuration
-	router.GET("/config" /*m.Auth, m.Admin,*/, c.ReadConfig)
-	router.POST("/config" /*m.Auth, m.Admin,*/, c.UpsertConfig)
+	router.GET("/config", m.Auth, c.ReadConfig)
+	router.POST("/config", m.Auth, m.Admin, c.UpsertConfig)
 
 	// Manage Profiles
-	router.GET("/profiles" /*m.Auth, m.Admin,*/, c.ReadProfiles)
-	router.POST("/profiles" /*m.Auth, m.Admin,*/, c.UpsertProfiles)
+	router.GET("/profiles", m.Auth, c.ReadProfiles)
+	router.POST("/profiles", m.Auth, m.Admin, c.UpsertProfiles)
 
 	// Manage Plugins
-	router.GET("/plugins" /*m.Auth, m.Admin,*/, c.ReadPlugins)
-	router.POST("/plugins" /*m.Auth, m.Admin,*/, c.UpsertPlugins)
+	router.GET("/plugins", m.Auth, c.ReadPlugins)
+	router.POST("/plugins", m.Auth, m.Admin, c.UpsertPlugins)
 
 	// Read image with Tesseract
-	router.POST("/plugins/readText" /*m.Auth,*/, c.ReadImageText)
+	router.POST("/plugins/readText", m.Auth, c.ReadImageText)
 
 	// API Home
 	router.GET("/", c.ApiHome)
