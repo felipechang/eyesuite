@@ -3,7 +3,7 @@ import {getServer, postServer} from "$lib/stores/wrapper";
 
 const init: IUserInit[] = [];
 
-const ENDPOINT = "/users";
+const ENDPOINT = "api/users";
 
 function createStore() {
     const {subscribe, set} = writable(init);

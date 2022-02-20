@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gitlab.com/hardcake/eyesuite/controller"
@@ -12,7 +11,6 @@ import (
 	"gitlab.com/hardcake/eyesuite/service/tesseract"
 	"gitlab.com/hardcake/eyesuite/service/token"
 	"log"
-	"time"
 )
 
 var tes tesseract.Tesseract
@@ -38,7 +36,6 @@ func init() {
 	log.Println("Token module loaded")
 
 	sto = storage.NewStorage("db", "6379", "")
-	//sto = storage.NewStorage("localhost", "6379", "")
 	log.Println("Redis module loaded")
 
 	preLoadConfig()
@@ -59,51 +56,41 @@ func main() {
 	// create router
 	router := gin.Default()
 
-	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{
-			//TODO
-			"*",
-			"http://client:8080",
-			"https://client:8080",
-		},
-		AllowMethods:     []string{"OPTIONS", "GET", "POST"},
-		AllowHeaders:     []string{"Origin", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	// Serve static content
+	router.Static("/", "./frontend/build")
 
 	// JWT management
-	router.POST("/login", c.Login)
+	router.POST("api/login", c.Login)
 
-	router.POST("/logout", m.Auth, c.Logout)
-	router.POST("/refresh", m.Auth, c.Refresh)
+	router.POST("api/logout", m.Auth, c.Logout)
+	router.POST("api/refresh", m.Auth, c.Refresh)
 
 	// Post results to Netsuite
-	router.POST("/postImage", m.Auth, c.PostImage)
+	router.POST("api/postImage", m.Auth, c.PostImage)
 
 	// Manage Users
-	router.GET("/users", m.Auth, c.ReadUsers)
-	router.POST("/users", m.Auth, m.Admin, c.UpsertUsers)
+	router.GET("api/users", m.Auth, c.ReadUsers)
+	router.POST("api/users", m.Auth, m.Admin, c.UpsertUsers)
 
 	// Manage Configuration
-	router.GET("/config", m.Auth, c.ReadConfig)
-	router.POST("/config", m.Auth, m.Admin, c.UpsertConfig)
+	router.GET("api/config", m.Auth, c.ReadConfig)
+	router.POST("api/config", m.Auth, m.Admin, c.UpsertConfig)
 
 	// Manage Profiles
-	router.GET("/profiles", m.Auth, c.ReadProfiles)
-	router.POST("/profiles", m.Auth, m.Admin, c.UpsertProfiles)
+	router.GET("api/profiles", m.Auth, c.ReadProfiles)
+	router.POST("api/profiles", m.Auth, m.Admin, c.UpsertProfiles)
 
 	// Manage Plugins
-	router.GET("/plugins", m.Auth, c.ReadPlugins)
-	router.POST("/plugins", m.Auth, m.Admin, c.UpsertPlugins)
+	router.GET("api/plugins", m.Auth, c.ReadPlugins)
+	router.POST("api/plugins", m.Auth, m.Admin, c.UpsertPlugins)
 
 	// Read image with Tesseract
-	router.POST("/plugins/readText", m.Auth, c.ReadImageText)
+	router.POST("api/plugins/readText", m.Auth, c.ReadImageText)
 
 	// API Home
-	router.GET("/", c.ApiHome)
+	router.GET("api/", c.ApiHome)
 
+	// All ready
 	log.Println("Routes loaded")
 
 	// Start!!

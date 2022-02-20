@@ -46,7 +46,7 @@ func prePlugin() {
 		Name:          "OCR Reader",
 		Description:   "Reads text from an image",
 		Enabled:       true,
-		Endpoint:      "/plugins/readText",
+		Endpoint:      "api/plugins/readText",
 		EndpointField: "ocr-text",
 		Mapping: []storage.ProfileMapping{{
 			LabelText:   "OCR Result",
@@ -60,7 +60,7 @@ func prePlugin() {
 	x = append(x, storage.Plugin{
 		Name:          "Barcode Reader",
 		Description:   "Reads barcodes as text",
-		Endpoint:      "/plugins/readBarcode",
+		Endpoint:      "api/plugins/readBarcode",
 		EndpointField: "barcode-text",
 		Enabled:       true,
 		Mapping: []storage.ProfileMapping{{

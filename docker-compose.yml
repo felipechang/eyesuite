@@ -3,7 +3,7 @@ services:
 
   # Redis DB
   db:
-    container_name: redis
+    container_name: eyesuite_redis
     image: redis:latest
     volumes:
       - data:/data
@@ -11,21 +11,13 @@ services:
 
   # OCR server
   server:
-    container_name: eyesuite_backend
-    build: ./backend
+    container_name: eyesuite
+    build: .
     ports:
-      - "5000:5000"
+      - "8080:8080"
     depends_on:
       - db
     restart: always
-
-#  # Svelte app
-#  client:
-#    container_name: eyesuite_frontend
-#    build: ./frontend
-#    ports:
-#      - "8080:8080"
-#    restart: always
 
 volumes:
   data:

@@ -6,7 +6,7 @@ function createStore() {
             const formData = new FormData()
             formData.append("file", files);
             formData.append("template", template);
-            const response = await postServer(`/postImage`, formData);
+            const response = await postServer(`api/postImage`, formData);
 
             // invalid credentials
             if (response.status === 400) {

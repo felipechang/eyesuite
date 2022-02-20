@@ -1,9 +1,7 @@
 import {loginStore} from "$lib/stores/login";
 
-const baseUrl = "http://localhost:5000";
-
 const postServer = async (url: string, body: any): Promise<Response> => {
-    const response = await fetch(`${baseUrl}${url}`, {
+    const response = await fetch(`${url}`, {
         headers: makeHeaders(),
         method: 'POST',
         body: body
@@ -16,7 +14,7 @@ const postServer = async (url: string, body: any): Promise<Response> => {
 }
 
 const getServer = async (url: string): Promise<Response> => {
-    const response = await fetch(`${baseUrl}${url}`, {
+    const response = await fetch(`${url}`, {
         headers: makeHeaders(),
     });
     if (response.status === 401) {
@@ -27,7 +25,7 @@ const getServer = async (url: string): Promise<Response> => {
 }
 
 const loginServer = async (username: string, password: string): Promise<Response> => {
-    return await fetch(`${baseUrl}/login`, {
+    return await fetch(`api/login`, {
         headers: {
             "Authorization": "",
         },

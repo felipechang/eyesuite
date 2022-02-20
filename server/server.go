@@ -12,7 +12,7 @@ import (
 
 func Start(router *gin.Engine) {
 	srv := &http.Server{
-		Addr:    ":5000",
+		Addr:    ":8080",
 		Handler: router,
 	}
 

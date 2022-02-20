@@ -11,7 +11,7 @@ const init: IConnectionInit = {
     token_secret: "",
 };
 
-const ENDPOINT = "/config";
+const ENDPOINT = "api/config";
 
 function createStore() {
     const {subscribe, set} = writable(init);
