@@ -3,7 +3,7 @@ import {getServer, postServer} from "$lib/stores/wrapper";
 
 const init: IProfileInit[] = [];
 
-const ENDPOINT = "/profiles";
+const ENDPOINT = "/api/profiles";
 
 function createStore() {
     const {subscribe, set} = writable(init);

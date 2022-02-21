@@ -1,25 +1,42 @@
-import {loginServer, postServer} from "$lib/stores/wrapper";
-
-const LOGOUT = "api/logout";
-const REFRESH = "api/refresh";
+import {makeHeaders, postServer} from "$lib/stores/wrapper";
 
 function createStore() {
     return {
         login: async (username: string, password: string) => {
-            const response = await loginServer(username, password)
+            const response = await fetch(`/api/login`, {
+                headers: {
+                    "Authorization": "",
+                },
+                method: 'POST',
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                })
+            });
             return await response.json();
         },
         logout: async () => {
-            const response = await postServer(LOGOUT, "");
+            const response = await fetch(`/api/logout`, {
+                headers: makeHeaders(),
+                method: 'POST',
+                body: ""
+            });
             return await response.json();
         },
         refresh: async () => {
-            const response = await postServer(REFRESH, "");
-            const data = await response.json();
+
+            // get current and empty in case request fails
             const auth = localStorage.getItem("auth") as string;
+            localStorage.removeItem("auth");
+
+            // call for new token
+            const response = await postServer("/api/refresh", "");
+            const data = await response.json();
             const tokens = auth ? JSON.parse(auth) : {"control": "", "access_token": "", "refresh_token": ""};
             tokens.access_token = data.data.access_token;
             tokens.refresh_token = data.data.refresh_token;
+
+            // set new token
             localStorage.setItem("auth", JSON.stringify(tokens));
         },
     }

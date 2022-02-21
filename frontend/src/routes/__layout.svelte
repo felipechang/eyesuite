@@ -25,5 +25,12 @@
     let logged = false;
     let isAdministrator = false;
 
-    onMount(() => logged = !!localStorage.getItem("auth"));
+    onMount(() => {
+        const user = localStorage.getItem("user");
+        const auth = localStorage.getItem("auth");
+        const username = (user ? JSON.parse(user) : {username: ""}).username;
+        const control = (auth ? JSON.parse(auth) : {control: ""}).control;
+        logged = !!user && !!auth;
+        isAdministrator = btoa(username + "1") === control;
+    });
 </script>

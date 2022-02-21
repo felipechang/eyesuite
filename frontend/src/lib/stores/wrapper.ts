@@ -1,13 +1,14 @@
 import {loginStore} from "$lib/stores/login";
 
-const postServer = async (url: string, body: any): Promise<Response> => {
+const postServer = async (url: string, body: BodyInit): Promise<Response> => {
     const response = await fetch(`${url}`, {
         headers: makeHeaders(),
         method: 'POST',
         body: body
     });
     if (response.status === 401) {
-        await loginStore.refresh()
+        localStorage.removeItem("auth");
+        await loginStore.refresh();
         return postServer(url, body);
     }
     return response;
@@ -18,23 +19,11 @@ const getServer = async (url: string): Promise<Response> => {
         headers: makeHeaders(),
     });
     if (response.status === 401) {
+        localStorage.removeItem("auth");
         await loginStore.refresh()
         return getServer(url);
     }
     return response;
-}
-
-const loginServer = async (username: string, password: string): Promise<Response> => {
-    return await fetch(`api/login`, {
-        headers: {
-            "Authorization": "",
-        },
-        method: 'POST',
-        body: JSON.stringify({
-            username: username,
-            password: password,
-        })
-    });
 }
 
 const makeHeaders = () => {
@@ -46,7 +35,7 @@ const makeHeaders = () => {
 }
 
 export {
-    loginServer,
+    makeHeaders,
     postServer,
     getServer,
 }

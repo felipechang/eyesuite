@@ -70,6 +70,7 @@
         } else {
             isAdministrator = btoa(username + "1") === res.data.control;
             localStorage.setItem("auth", JSON.stringify(res.data));
+            localStorage.setItem("user", JSON.stringify({username: username, lastLogin: (new Date()).getTime()}));
             handleLogIn();
         }
     }

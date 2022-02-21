@@ -58,9 +58,8 @@
         const res = await loginStore.logout();
         if (res.error) {
             errorStore.set({title: "Logout Error", error: res.data.toUpperCase()});
-        } else {
-            localStorage.removeItem("auth");
-            handleLogOut()
         }
+        handleLogOut();
+        localStorage.removeItem("auth");
     }
 </script>

@@ -9,12 +9,13 @@ const init = {
     token_id: "",
     token_secret: "",
 };
-const ENDPOINT = "/config";
+const ENDPOINT = "/api/config";
 function createStore() {
     const { subscribe, set } = writable(init);
     return {
         init: () => init,
         mount: async () => {
+            console.log("connectionStore.mount");
             const response = await getServer(ENDPOINT);
             const data = await response.json();
             return data.data;

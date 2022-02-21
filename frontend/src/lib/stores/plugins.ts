@@ -3,7 +3,7 @@ import {getServer, postServer} from "$lib/stores/wrapper";
 
 const init: IPluginInit[] = [];
 
-const ENDPOINT = "api/plugins";
+const ENDPOINT = "/api/plugins";
 
 function createStore() {
     const {subscribe, set} = writable(init);

@@ -11,13 +11,14 @@ const init: IConnectionInit = {
     token_secret: "",
 };
 
-const ENDPOINT = "api/config";
+const ENDPOINT = "/api/config";
 
 function createStore() {
     const {subscribe, set} = writable(init);
     return {
         init: (): IConnectionInit => init,
         mount: async () => {
+            console.log("connectionStore.mount");
             const response = await getServer(ENDPOINT);
             const data = await response.json();
             return data.data;

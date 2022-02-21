@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 import { getServer, postServer } from "$lib/stores/wrapper";
 const init = [];
-const ENDPOINT = "/users";
+const ENDPOINT = "/api/users";
 function createStore() {
     const { subscribe, set } = writable(init);
     return {
