@@ -4,15 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gofiber/fiber/v2"
 	uuid "github.com/satori/go.uuid"
 	"gitlab.com/hardcake/eyesuite/service/storage"
-	"net/http"
 	"strings"
 	"time"
 )
 
 type Token interface {
-	ExtractHeaderToken(r *http.Request) string
+	ExtractHeaderToken(c *fiber.Ctx) string
 	ExtractUserKey(accessToken string, accessSecret string) (string, error)
 	ApplyTokenValues(key string, user *storage.User) error
 }
@@ -49,8 +49,8 @@ type Pair struct {
 }
 
 // ExtractHeaderToken get Authorization key from the request header
-func (t *token) ExtractHeaderToken(r *http.Request) string {
-	bearToken := r.Header.Get("Authorization")
+func (t *token) ExtractHeaderToken(c *fiber.Ctx) string {
+	bearToken := c.Get("Authorization")
 	strArr := strings.Split(bearToken, " ")
 	if len(strArr) == 2 {
 		return strArr[1]

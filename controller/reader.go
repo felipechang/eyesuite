@@ -2,58 +2,71 @@ package controller
 
 import (
 	"bytes"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"gitlab.com/hardcake/eyesuite/service/suitetalk"
 	"io"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
-	"net/http"
 )
 
+type ImagePost struct {
+	Template string `form:"template"`
+}
+
 // ReadImageText read image from file and return text
-func (o *controller) ReadImageText(c *gin.Context) {
-	f, _, err := c.Request.FormFile("file")
+func (o *controller) ReadImageText(c *fiber.Ctx) error {
+	fileHeader, err := c.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+		return err
+	}
+	file, err := fileHeader.Open()
+	if err != nil {
+		return err
+	}
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	defer func(f multipart.File) {
 		err := f.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
-	}(f)
-	b, err := ioutil.ReadAll(f)
+	}(file)
+
+	b, err := ioutil.ReadAll(file)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	text, err := o.Tesseract.ReadImage(b)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
-	c.JSON(http.StatusOK, Success(text))
+	return c.JSON(text)
 }
 
 // PostImage post image to NetSuite
-func (o *controller) PostImage(c *gin.Context) {
-	template := c.PostForm("template")
+func (o *controller) PostImage(c *fiber.Ctx) error {
+	var imagePost ImagePost
+	err := c.BodyParser(imagePost)
+	if err != nil {
+		return err
+	}
+	template := imagePost.Template
+	if template == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "No template sent")
+	}
 	f, err := c.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 	open, err := f.Open()
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, open); err != nil {
-		c.JSON(http.StatusUnauthorized, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 	defer func(open multipart.File) {
 		err := open.Close()
@@ -63,27 +76,22 @@ func (o *controller) PostImage(c *gin.Context) {
 	}(open)
 	config, err := o.Storage.ReadConfig()
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 	if config.WsUrl == "" || config.Realm == "" || config.Version == "" {
-		c.JSON(http.StatusForbidden, Error("company configuration values"))
-		return
+		return fiber.NewError(fiber.StatusForbidden, "Company settings missing")
 	}
 	if config.ConsumerKey == "" || config.ConsumerSecret == "" {
-		c.JSON(http.StatusForbidden, Error("consumer configuration missing"))
-		return
+		return fiber.NewError(fiber.StatusForbidden, "Consumer keys missing")
 	}
 	if config.TokenID == "" || config.TokenSecret == "" {
-		c.JSON(http.StatusForbidden, Error("token configuration missing"))
-		return
+		return fiber.NewError(fiber.StatusForbidden, "Token keys missing")
 	}
 	file := suitetalk.NewFile(template, f.Filename, buf)
 	settings := suitetalk.NewSettings(config)
 	upload, err := suitetalk.Upload(settings, file)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
-	c.JSON(http.StatusOK, Success(upload))
+	return c.JSON(upload)
 }

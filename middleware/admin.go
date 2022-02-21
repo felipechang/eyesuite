@@ -1,36 +1,25 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"gitlab.com/hardcake/eyesuite/controller"
-	"net/http"
+	"github.com/gofiber/fiber/v2"
 )
 
-func (m *middleware) Admin(c *gin.Context) {
-	accessToken := m.service.Token.ExtractHeaderToken(c.Request)
+func (m *middleware) Admin(c *fiber.Ctx) error {
+
+	accessToken := m.service.Token.ExtractHeaderToken(c)
 	if accessToken == "" {
-		c.JSON(http.StatusUnauthorized, controller.Error("authorization token not found in header"))
-		c.Abort()
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, "authorization token not found in header")
 	}
 	key, err := m.service.Token.ExtractUserKey(accessToken, m.cts.AccessSecret)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, controller.Error(err.Error()))
-		c.Abort()
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
-
-	// read users
 	user, err := m.service.Storage.ReadUser(key)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, controller.Error(err.Error()))
-		c.Abort()
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 	if user.Admin != true {
-		c.JSON(http.StatusUnauthorized, controller.Error("unauthorized access"))
-		c.Abort()
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, "unauthorized access")
 	}
-	c.Next()
+	return c.Next()
 }

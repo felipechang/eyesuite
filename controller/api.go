@@ -1,10 +1,9 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/gofiber/fiber/v2"
 )
 
-func (o *controller) ApiHome(c *gin.Context) {
-	c.JSON(http.StatusOK, "Welcome to EyeSuite")
+func (o *controller) ApiHome(c *fiber.Ctx) error {
+	return c.JSON("Welcome to EyeSuite")
 }

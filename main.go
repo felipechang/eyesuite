@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"gitlab.com/hardcake/eyesuite/controller"
 	"gitlab.com/hardcake/eyesuite/middleware"
@@ -11,7 +11,6 @@ import (
 	"gitlab.com/hardcake/eyesuite/service/tesseract"
 	"gitlab.com/hardcake/eyesuite/service/token"
 	"log"
-	"strings"
 )
 
 var tes tesseract.Tesseract
@@ -26,7 +25,7 @@ func init() {
 		log.Fatal(err)
 	}
 
-	// get environment variables
+	// Get environment variables
 	cts := service.GetEnv()
 	log.Println("Environment variables loaded")
 
@@ -55,64 +54,44 @@ func main() {
 	m := middleware.NewMiddleware(s)
 	c := controller.NewController(s)
 
-	gin.SetMode(gin.ReleaseMode)
-
-	// create router
-	router := gin.Default()
-	apiRouter := gin.Default()
-	staticRouter := gin.Default()
+	app := fiber.New()
 
 	// Serve static content
-	staticRouter.Static("/", "./frontend/build")
+	app.Static("/", "./frontend/build")
 
-	// API routes group
-	a := apiRouter.Group("/api")
-	{
-		// JWT management
-		a.POST("login", c.Login)
+	// Create a new route group '/api'
+	api := app.Group("/api", c.ApiHome)
 
-		a.POST("logout", m.Auth, c.Logout)
-		a.POST("refresh", m.Auth, c.Refresh)
+	// JWT management
+	api.Post("/login", c.Login)
+	api.Post("/logout", m.Auth, c.Logout)
+	api.Post("/refresh", m.Auth, c.Refresh)
 
-		// Post results to Netsuite
-		a.POST("postImage", m.Auth, c.PostImage)
+	// Post results to Netsuite
+	api.Post("/postImage", m.Auth, c.PostImage)
 
-		// Manage Users
-		a.GET("users", m.Auth, c.ReadUsers)
-		a.POST("users", m.Auth, m.Admin, c.UpsertUsers)
+	// Manage Users
+	api.Get("/users", m.Auth, c.ReadUsers)
+	api.Post("/users", m.Auth, m.Admin, c.UpsertUsers)
 
-		// Manage Configuration
-		a.GET("config", m.Auth, c.ReadConfig)
-		a.POST("config", m.Auth, m.Admin, c.UpsertConfig)
+	// Manage Configuration
+	api.Get("/config", m.Auth, c.ReadConfig)
+	api.Post("/config", m.Auth, m.Admin, c.UpsertConfig)
 
-		// Manage Profiles
-		a.GET("profiles", m.Auth, c.ReadProfiles)
-		a.POST("profiles", m.Auth, m.Admin, c.UpsertProfiles)
+	// Manage Profiles
+	api.Get("/profiles", m.Auth, c.ReadProfiles)
+	api.Post("/profiles", m.Auth, m.Admin, c.UpsertProfiles)
 
-		// Manage Plugins
-		a.GET("plugins", m.Auth, c.ReadPlugins)
-		a.POST("plugins", m.Auth, m.Admin, c.UpsertPlugins)
+	// Manage Plugins
+	api.Get("/plugins", m.Auth, c.ReadPlugins)
+	api.Post("/plugins", m.Auth, m.Admin, c.UpsertPlugins)
 
-		// Read image with Tesseract
-		a.POST("plugins/readText", m.Auth, c.ReadImageText)
-
-		// API Home
-		a.GET("/", c.ApiHome)
-	}
-
-	router.Any("/*any", func(c *gin.Context) {
-		path := c.Param("any")
-		if strings.HasPrefix(path, "/api") {
-			apiRouter.HandleContext(c)
-		} else {
-			staticRouter.HandleContext(c)
-		}
-		c.Abort()
-	})
+	// Read image with Tesseract
+	api.Post("/plugins/readText", m.Auth, c.ReadImageText)
 
 	// All ready
 	log.Println("Routes loaded")
 
 	// Start!!
-	server.Start(router)
+	server.Start(app)
 }

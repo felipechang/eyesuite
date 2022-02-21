@@ -1,31 +1,31 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"gitlab.com/hardcake/eyesuite/service"
 )
 
 type Controller interface {
-	ApiHome(c *gin.Context)
+	ApiHome(c *fiber.Ctx) error
 
-	UpsertConfig(c *gin.Context)
-	ReadConfig(c *gin.Context)
+	UpsertConfig(c *fiber.Ctx) error
+	ReadConfig(c *fiber.Ctx) error
 
-	Login(c *gin.Context)
-	Refresh(c *gin.Context)
-	Logout(c *gin.Context)
+	Login(c *fiber.Ctx) error
+	Refresh(c *fiber.Ctx) error
+	Logout(c *fiber.Ctx) error
 
-	ReadProfiles(c *gin.Context)
-	UpsertProfiles(c *gin.Context)
+	ReadProfiles(c *fiber.Ctx) error
+	UpsertProfiles(c *fiber.Ctx) error
 
-	ReadImageText(c *gin.Context)
-	PostImage(c *gin.Context)
+	ReadImageText(c *fiber.Ctx) error
+	PostImage(c *fiber.Ctx) error
 
-	ReadUsers(c *gin.Context)
-	UpsertUsers(c *gin.Context)
+	ReadUsers(c *fiber.Ctx) error
+	UpsertUsers(c *fiber.Ctx) error
 
-	ReadPlugins(c *gin.Context)
-	UpsertPlugins(c *gin.Context)
+	ReadPlugins(c *fiber.Ctx) error
+	UpsertPlugins(c *fiber.Ctx) error
 }
 
 type controller struct {

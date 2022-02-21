@@ -1,13 +1,13 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"gitlab.com/hardcake/eyesuite/service"
 )
 
 type Middleware interface {
-	Auth(c *gin.Context)
-	Admin(c *gin.Context)
+	Auth(c *fiber.Ctx) error
+	Admin(c *fiber.Ctx) error
 }
 
 type middleware struct {

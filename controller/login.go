@@ -3,10 +3,9 @@ package controller
 import (
 	"encoding/base64"
 	"errors"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"gitlab.com/hardcake/eyesuite/service/storage"
 	"gitlab.com/hardcake/eyesuite/service/token"
-	"net/http"
 )
 
 type UserLogin struct {
@@ -20,16 +19,14 @@ type UserResponse struct {
 }
 
 // Login start user session
-func (o *controller) Login(c *gin.Context) {
+func (o *controller) Login(c *fiber.Ctx) error {
 	key, err := getUserLoginKey(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 	user, err := o.refreshUserTokens(key)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 	var control = user.Name
 	if user.Admin {
@@ -37,42 +34,40 @@ func (o *controller) Login(c *gin.Context) {
 	} else {
 		control = control + "0"
 	}
-	c.JSON(http.StatusOK, Success(&UserResponse{
+	return c.JSON(&UserResponse{
 		Control:      base64.StdEncoding.EncodeToString([]byte(control)),
 		AccessToken:  user.AccessToken,
 		RefreshToken: user.RefreshToken,
-	}))
+	})
 }
 
 // Refresh update user access and refresh tokens
-func (o *controller) Refresh(c *gin.Context) {
-	key := c.GetString("user_key")
+func (o *controller) Refresh(c *fiber.Ctx) error {
+	key := c.Get("user_key")
 	user, err := o.refreshUserTokens(key)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
-	c.JSON(http.StatusOK, Success(token.Pair{
+	return c.JSON(token.Pair{
 		AccessToken:  user.AccessToken,
 		RefreshToken: user.RefreshToken,
-	}))
+	})
 }
 
 // Logout end user session
-func (o *controller) Logout(c *gin.Context) {
-	key := c.GetString("user_key")
+func (o *controller) Logout(c *fiber.Ctx) error {
+	key := c.Get("user_key")
 	_, err := o.refreshUserTokens(key)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
-	c.JSON(http.StatusOK, Success("1"))
+	return c.JSON("1")
 }
 
 // getUserLoginKey get user key from username and password
-func getUserLoginKey(c *gin.Context) (string, error) {
+func getUserLoginKey(c *fiber.Ctx) (string, error) {
 	var u *UserLogin
-	if err := c.ShouldBindJSON(&u); err != nil {
+	if err := c.BodyParser(&u); err != nil {
 		return "", err
 	}
 	if u.Username == "" || u.Password == "" {

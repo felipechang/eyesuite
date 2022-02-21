@@ -1,32 +1,28 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"gitlab.com/hardcake/eyesuite/service/storage"
-	"net/http"
 )
 
 // ReadPlugins read plugin list
-func (o *controller) ReadPlugins(c *gin.Context) {
+func (o *controller) ReadPlugins(c *fiber.Ctx) error {
 	rp, err := o.Storage.ReadPlugins()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
-	c.JSON(http.StatusOK, Success(rp))
+	return c.JSON(rp)
 }
 
 // UpsertPlugins update or create plugin list
-func (o *controller) UpsertPlugins(c *gin.Context) {
+func (o *controller) UpsertPlugins(c *fiber.Ctx) error {
 	var plugins []storage.Plugin
-	if err := c.ShouldBindJSON(&plugins); err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+	if err := c.BodyParser(&plugins); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	up, err := o.Storage.UpsertPlugins(plugins)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
-	c.JSON(http.StatusOK, Success(up))
+	return c.JSON(up)
 }

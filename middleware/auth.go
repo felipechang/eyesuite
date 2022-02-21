@@ -2,47 +2,40 @@ package middleware
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"gitlab.com/hardcake/eyesuite/controller"
+	"github.com/gofiber/fiber/v2"
 	"gitlab.com/hardcake/eyesuite/service/token"
-	"net/http"
 )
 
-func (m *middleware) Auth(c *gin.Context) {
+func (m *middleware) Auth(c *fiber.Ctx) error {
 
 	// find and evaluate access token
 	key, err := m.evaluateAccessKey(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, controller.Error(err.Error()))
-		c.Abort()
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 	if key != "" {
 		c.Set("user_key", key)
-		c.Next()
-		return
+		return c.Next()
+
 	}
 
 	// find and evaluate refresh token
 	key, err = m.evaluateRefreshKey(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, controller.Error(err.Error()))
-		c.Abort()
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
+
 	}
 	if key != "" {
 		c.Set("user_key", key)
-		c.Next()
-		return
+		return c.Next()
 	}
 
-	c.JSON(http.StatusUnauthorized, controller.Error("could not authenticate tokens"))
-	c.Abort()
+	return fiber.NewError(fiber.StatusUnauthorized, "could not authenticate tokens")
 }
 
 // evaluateAccessKey evaluate that access token is correct
-func (m *middleware) evaluateAccessKey(c *gin.Context) (string, error) {
-	headerToken := m.service.Token.ExtractHeaderToken(c.Request)
+func (m *middleware) evaluateAccessKey(c *fiber.Ctx) (string, error) {
+	headerToken := m.service.Token.ExtractHeaderToken(c)
 	if headerToken == "" {
 		return "", nil
 	}
@@ -64,9 +57,9 @@ func (m *middleware) evaluateAccessKey(c *gin.Context) (string, error) {
 }
 
 // evaluateRefreshKey evaluate that refresh token is correct
-func (m *middleware) evaluateRefreshKey(c *gin.Context) (string, error) {
+func (m *middleware) evaluateRefreshKey(c *fiber.Ctx) (string, error) {
 	req := &token.Pair{}
-	err := c.ShouldBindJSON(&req)
+	err := c.BodyParser(&req)
 	if err != nil && err.Error() != "EOF" {
 		return "", errors.New("could not parse body token")
 	}

@@ -1,32 +1,28 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"gitlab.com/hardcake/eyesuite/service/storage"
-	"net/http"
 )
 
 // ReadProfiles read profile list
-func (o *controller) ReadProfiles(c *gin.Context) {
+func (o *controller) ReadProfiles(c *fiber.Ctx) error {
 	rp, err := o.Storage.ReadProfiles()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
-	c.JSON(http.StatusOK, Success(rp))
+	return c.JSON(rp)
 }
 
 // UpsertProfiles update or create profile list
-func (o *controller) UpsertProfiles(c *gin.Context) {
+func (o *controller) UpsertProfiles(c *fiber.Ctx) error {
 	var profiles []storage.Profile
-	if err := c.ShouldBindJSON(&profiles); err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+	if err := c.BodyParser(&profiles); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	up, err := o.Storage.UpsertProfiles(profiles)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
-	c.JSON(http.StatusOK, Success(up))
+	return c.JSON(up)
 }

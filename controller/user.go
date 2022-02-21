@@ -2,9 +2,8 @@ package controller
 
 import (
 	"encoding/base64"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"gitlab.com/hardcake/eyesuite/service/storage"
-	"net/http"
 )
 
 type UserSummary struct {
@@ -16,13 +15,12 @@ type UserSummary struct {
 	Password string `json:"password"`
 }
 
-func (o *controller) ReadUsers(c *gin.Context) {
+func (o *controller) ReadUsers(c *fiber.Ctx) error {
 
 	// read users
 	users, err := o.Storage.ReadUsers()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	// read summary values
@@ -37,16 +35,15 @@ func (o *controller) ReadUsers(c *gin.Context) {
 			Password: "",
 		})
 	}
-	c.JSON(http.StatusOK, Success(summary))
+	return c.JSON(summary)
 }
 
-func (o *controller) UpsertUsers(c *gin.Context) {
+func (o *controller) UpsertUsers(c *fiber.Ctx) error {
 
 	// unmarshall request
 	var summary []UserSummary
-	if err := c.ShouldBindJSON(&summary); err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+	if err := c.BodyParser(&summary); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	// generate key where required
@@ -59,8 +56,7 @@ func (o *controller) UpsertUsers(c *gin.Context) {
 	// read users
 	users, err := o.Storage.ReadUsers()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	// users were deleted
@@ -88,8 +84,7 @@ func (o *controller) UpsertUsers(c *gin.Context) {
 			var user storage.User
 			err = o.Token.ApplyTokenValues(summary[s].Key, &user)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, Error(err.Error()))
-				return
+				return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 			}
 			user.Name = summary[s].Name
 			user.Username = summary[s].Username
@@ -104,11 +99,10 @@ func (o *controller) UpsertUsers(c *gin.Context) {
 	u, err := o.Storage.UpsertUsers(users)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, Error(err.Error()))
-		return
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 
-	c.JSON(http.StatusOK, Success(u))
+	return c.JSON(u)
 }
 
 // findUserKey find the key position of the user
