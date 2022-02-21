@@ -1,4 +1,3 @@
-# Server
 FROM alpine
 RUN apk add --update g++ go leptonica tesseract-ocr tesseract-ocr-dev nodejs npm
 ADD . /app/

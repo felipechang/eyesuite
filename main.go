@@ -36,7 +36,7 @@ func init() {
 	tok = token.NewToken(cts.AccessSecret, cts.RefreshSecret)
 	log.Println("Token module loaded")
 
-	sto = storage.NewStorage("localhost", "6379", "")
+	sto = storage.NewStorage("db", "6379", "")
 	log.Println("Redis module loaded")
 
 	preLoadConfig()
