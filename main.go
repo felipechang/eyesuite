@@ -33,7 +33,8 @@ func init() {
 	tes = tesseract.NewTesseract()
 	tok = token.NewToken(cts.AccessSecret, cts.RefreshSecret)
 
-	sto = storage.NewStorage("localhost", "6379", "")
+	sto = storage.NewStorage("db", "6379", "")
+	//sto = storage.NewStorage("localhost", "6379", "")
 
 	preLoadConfig()
 	preProfile()
