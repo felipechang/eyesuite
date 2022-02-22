@@ -18,16 +18,13 @@ function createStore() {
     return {
         init: (): IConnectionInit => init,
         mount: async () => {
-            console.log("connectionStore.mount");
             const response = await getServer(ENDPOINT);
-            const data = await response.json();
-            return data.data;
+            return await response.json();
         },
         subscribe,
         persist: async (connection: IConnectionInit) => {
             const response = await postServer(ENDPOINT, JSON.stringify(connection));
-            const data = await response.json();
-            set(data.data);
+            set(await response.json());
         },
         validate: (connection: IConnectionInit): boolean => {
             return (

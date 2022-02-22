@@ -105,7 +105,7 @@
 
     /** handleUsernameChange Show a duplicate error if username is repeated */
     const handleUsernameChange = () => {
-        if (!users) {
+        if (user.name === "") {
             return;
         }
         user.username = user.username.trim();

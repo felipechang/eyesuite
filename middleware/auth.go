@@ -14,19 +14,19 @@ func (m *middleware) Auth(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 	if key != "" {
-		c.Set("user_key", key)
+		c.Locals("user_key", key)
 		return c.Next()
-
 	}
 
 	// find and evaluate refresh token
 	key, err = m.evaluateRefreshKey(c)
+
 	if err != nil {
 		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 
 	}
 	if key != "" {
-		c.Set("user_key", key)
+		c.Locals("user_key", key)
 		return c.Next()
 	}
 

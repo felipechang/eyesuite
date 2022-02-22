@@ -10,19 +10,15 @@ import (
 	"mime/multipart"
 )
 
-type ImagePost struct {
-	Template string `form:"template"`
-}
-
 // ReadImageText read image from file and return text
 func (o *controller) ReadImageText(c *fiber.Ctx) error {
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	file, err := fileHeader.Open()
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
@@ -33,7 +29,6 @@ func (o *controller) ReadImageText(c *fiber.Ctx) error {
 			log.Fatal(err)
 		}
 	}(file)
-
 	b, err := ioutil.ReadAll(file)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
@@ -47,12 +42,7 @@ func (o *controller) ReadImageText(c *fiber.Ctx) error {
 
 // PostImage post image to NetSuite
 func (o *controller) PostImage(c *fiber.Ctx) error {
-	var imagePost ImagePost
-	err := c.BodyParser(imagePost)
-	if err != nil {
-		return err
-	}
-	template := imagePost.Template
+	template := c.FormValue("template")
 	if template == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "No template sent")
 	}

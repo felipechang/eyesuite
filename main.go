@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/redirect/v2"
 	"github.com/joho/godotenv"
 	"gitlab.com/hardcake/eyesuite/controller"
 	"gitlab.com/hardcake/eyesuite/middleware"
@@ -27,25 +28,17 @@ func init() {
 
 	// Get environment variables
 	cts := service.GetEnv()
-	log.Println("Environment variables loaded")
 
 	// load services and service cors
 	tes = tesseract.NewTesseract()
-	log.Println("Tesseract module loaded")
 	tok = token.NewToken(cts.AccessSecret, cts.RefreshSecret)
-	log.Println("Token module loaded")
 
-	sto = storage.NewStorage("db", "6379", "")
-	log.Println("Redis module loaded")
+	sto = storage.NewStorage("localhost", "6379", "")
 
 	preLoadConfig()
-	log.Println("Created dummy config")
 	preProfile()
-	log.Println("Created dummy profile")
 	prePlugin()
-	log.Println("Created dummy plugin")
 	preLoadAdminUser()
-	log.Println("Created dummy users")
 }
 
 func main() {
@@ -55,42 +48,49 @@ func main() {
 	c := controller.NewController(s)
 
 	app := fiber.New()
+	app.Use(redirect.New(redirect.Config{
+		Rules: map[string]string{
+			"/help":                "/",
+			"/settings/connection": "/",
+			"/settings/plugins":    "/",
+			"/settings/profiles":   "/",
+			"/settings/users":      "/",
+		},
+		StatusCode: 301,
+	}))
 
 	// Serve static content
 	app.Static("/", "./frontend/build")
 
-	// Create a new route group '/api'
-	api := app.Group("/api", c.ApiHome)
-
 	// JWT management
-	api.Post("/login", c.Login)
-	api.Post("/logout", m.Auth, c.Logout)
-	api.Post("/refresh", m.Auth, c.Refresh)
+	app.Post("/api/login", c.Login)
+	app.Post("/api/logout", m.Auth, c.Logout)
+	app.Post("/api/refresh", m.Auth, c.Refresh)
 
 	// Post results to Netsuite
-	api.Post("/postImage", m.Auth, c.PostImage)
+	app.Post("/api/postImage", m.Auth, c.PostImage)
 
 	// Manage Users
-	api.Get("/users", m.Auth, c.ReadUsers)
-	api.Post("/users", m.Auth, m.Admin, c.UpsertUsers)
+	app.Get("/api/users", m.Auth, c.ReadUsers)
+	app.Post("/api/users", m.Auth, m.Admin, c.UpsertUsers)
 
 	// Manage Configuration
-	api.Get("/config", m.Auth, c.ReadConfig)
-	api.Post("/config", m.Auth, m.Admin, c.UpsertConfig)
+	app.Get("/api/config", m.Auth, c.ReadConfig)
+	app.Post("/api/config", m.Auth, m.Admin, c.UpsertConfig)
 
 	// Manage Profiles
-	api.Get("/profiles", m.Auth, c.ReadProfiles)
-	api.Post("/profiles", m.Auth, m.Admin, c.UpsertProfiles)
+	app.Get("/api/profiles", m.Auth, c.ReadProfiles)
+	app.Post("/api/profiles", m.Auth, m.Admin, c.UpsertProfiles)
 
 	// Manage Plugins
-	api.Get("/plugins", m.Auth, c.ReadPlugins)
-	api.Post("/plugins", m.Auth, m.Admin, c.UpsertPlugins)
+	app.Get("/api/plugins", m.Auth, c.ReadPlugins)
+	app.Post("/api/plugins", m.Auth, m.Admin, c.UpsertPlugins)
 
 	// Read image with Tesseract
-	api.Post("/plugins/readText", m.Auth, c.ReadImageText)
+	app.Post("/api/plugins/readText", m.Auth, c.ReadImageText)
 
-	// All ready
-	log.Println("Routes loaded")
+	// Api root
+	app.Get("/api", c.ApiHome)
 
 	// Start!!
 	server.Start(app)

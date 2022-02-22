@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/hardcake/eyesuite/service/storage"
 	"gitlab.com/hardcake/eyesuite/service/token"
@@ -43,7 +44,7 @@ func (o *controller) Login(c *fiber.Ctx) error {
 
 // Refresh update user access and refresh tokens
 func (o *controller) Refresh(c *fiber.Ctx) error {
-	key := c.Get("user_key")
+	key := fmt.Sprintf("%v", c.Locals("user_key"))
 	user, err := o.refreshUserTokens(key)
 	if err != nil {
 		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
@@ -56,7 +57,7 @@ func (o *controller) Refresh(c *fiber.Ctx) error {
 
 // Logout end user session
 func (o *controller) Logout(c *fiber.Ctx) error {
-	key := c.Get("user_key")
+	key := fmt.Sprintf("%v", c.Locals("user_key"))
 	_, err := o.refreshUserTokens(key)
 	if err != nil {
 		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
@@ -66,7 +67,7 @@ func (o *controller) Logout(c *fiber.Ctx) error {
 
 // getUserLoginKey get user key from username and password
 func getUserLoginKey(c *fiber.Ctx) (string, error) {
-	var u *UserLogin
+	var u = new(UserLogin)
 	if err := c.BodyParser(&u); err != nil {
 		return "", err
 	}

@@ -6,6 +6,7 @@ function createStore() {
             const response = await fetch(`/api/login`, {
                 headers: {
                     "Authorization": "",
+                    "Content-Type": "application/json"
                 },
                 method: 'POST',
                 body: JSON.stringify({
@@ -33,8 +34,8 @@ function createStore() {
             const response = await postServer("/api/refresh", "");
             const data = await response.json();
             const tokens = auth ? JSON.parse(auth) : {"control": "", "access_token": "", "refresh_token": ""};
-            tokens.access_token = data.data.access_token;
-            tokens.refresh_token = data.data.refresh_token;
+            tokens.access_token = data.access_token;
+            tokens.refresh_token = data.refresh_token;
 
             // set new token
             localStorage.setItem("auth", JSON.stringify(tokens));

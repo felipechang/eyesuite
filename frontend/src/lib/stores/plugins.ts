@@ -27,14 +27,12 @@ function createStore() {
         init: (): IPluginInit[] => init,
         mount: async () => {
             const response = await getServer(ENDPOINT);
-            const data = await response.json();
-            return data.data;
+            return await response.json();
         },
         subscribe,
         persist: async (plugins: IPluginInit[]) => {
             const response = await postServer(ENDPOINT, JSON.stringify(plugins));
-            const data = await response.json();
-            set(data.data);
+            set(await response.json());
         },
     }
 }

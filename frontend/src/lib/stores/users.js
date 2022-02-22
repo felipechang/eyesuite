@@ -8,14 +8,12 @@ function createStore() {
         init: () => init,
         mount: async () => {
             const response = await getServer(ENDPOINT);
-            const data = await response.json();
-            return data.data;
+            return await response.json();
         },
         subscribe,
         persist: async (users) => {
             const response = await postServer(ENDPOINT, JSON.stringify(users));
-            const data = await response.json();
-            set(data.data);
+            set(await response.json());
         },
     };
 }

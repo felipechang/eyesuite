@@ -87,10 +87,10 @@
     }
 
     const handleImageRead = async () => {
-        let value = await readerStore.read(pluginLink, files);
+        let res = await readerStore.read(pluginLink, files);
         mappings = mappings.map((m) => {
             if (m.name === pluginField) {
-                m.value = value;
+                m.value = res.msg;
             }
             return m;
         });

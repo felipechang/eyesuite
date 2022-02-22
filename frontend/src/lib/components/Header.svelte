@@ -59,7 +59,9 @@
         if (res.error) {
             errorStore.set({title: "Logout Error", error: res.data.toUpperCase()});
         }
-        handleLogOut();
         localStorage.removeItem("auth");
+        localStorage.removeItem("user");
+        localStorage.removeItem("profile-selected");
+        handleLogOut();
     }
 </script>

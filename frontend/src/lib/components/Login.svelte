@@ -4,10 +4,10 @@
             <Row>
                 <Column/>
                 <Column>
-                    <Title
-                            details="Enter login details:"
-                            name="Company Name"
-                    />
+                    <h1>Welcome to EyeSuite</h1>
+                    <div style="padding: 10px 0 10px 0">
+                        <p>Enter login details:</p>
+                    </div>
                 </Column>
                 <Column/>
             </Row>
@@ -53,9 +53,7 @@
 
 <script>
     import {Button, Column, Content, Form, Grid, PasswordInput, Row, TextInput} from "carbon-components-svelte";
-    import Title from "$lib/components/Title.svelte";
     import {loginStore} from "$lib/stores/login.js";
-    import {errorStore} from "$lib/stores/error.js";
 
     export let handleLogIn;
     export let isAdministrator;
@@ -65,13 +63,9 @@
 
     const handleServerLogin = async () => {
         const res = await loginStore.login(username, password);
-        if (res.error) {
-            errorStore.set({title: "Login Error", error: res.data.toUpperCase()})
-        } else {
-            isAdministrator = btoa(username + "1") === res.data.control;
-            localStorage.setItem("auth", JSON.stringify(res.data));
-            localStorage.setItem("user", JSON.stringify({username: username, lastLogin: (new Date()).getTime()}));
-            handleLogIn();
-        }
+        isAdministrator = btoa(username + "1") === res.control;
+        localStorage.setItem("auth", JSON.stringify(res));
+        localStorage.setItem("user", JSON.stringify({username: username, lastLogin: (new Date()).getTime()}));
+        handleLogIn();
     }
 </script>

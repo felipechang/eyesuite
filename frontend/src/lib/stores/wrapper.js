@@ -1,7 +1,9 @@
 import { loginStore } from "$lib/stores/login";
 const postServer = async (url, body) => {
+    const headers = makeHeaders();
+    headers["Content-Type"] = "application/json";
     const response = await fetch(`${url}`, {
-        headers: makeHeaders(),
+        headers,
         method: 'POST',
         body: body
     });
@@ -13,9 +15,9 @@ const postServer = async (url, body) => {
     return response;
 };
 const getServer = async (url) => {
-    const response = await fetch(`${url}`, {
-        headers: makeHeaders(),
-    });
+    const headers = makeHeaders();
+    headers["Content-Type"] = "application/json";
+    const response = await fetch(`${url}`, { headers });
     if (response.status === 401) {
         localStorage.removeItem("auth");
         await loginStore.refresh();
