@@ -1,0 +1,10 @@
+{
+  "name": "eyesuite",
+  "description": "Image recognition server for NetSuite",
+  "version": "1.0.0",
+  "license": "mpl-2.0",
+  "author": {
+    "name": "Felipe Chang",
+    "email": "felipechang@hardcake.org"
+  }
+}

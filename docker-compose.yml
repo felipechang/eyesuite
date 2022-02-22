@@ -13,6 +13,7 @@ services:
   server:
     container_name: eyesuite
     build: .
+    image: hardcake/eyesuite:latest
     ports:
       - "8080:8080"
     depends_on:
