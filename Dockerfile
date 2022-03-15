@@ -5,7 +5,6 @@ RUN apk add --update g++ go \
     npm bash
 WORKDIR /app
 COPY ./ /app
-COPY build.sh /app/build.sh
-RUN chmod +x /app/build.sh
-
-ENTRYPOINT ["bash","build.sh"]
+COPY ./build.sh /app/build.sh
+RUN sed -i 's/\r//' /app/build.sh && chmod +x /app/build.sh
+ENTRYPOINT ["bash", "build.sh"]

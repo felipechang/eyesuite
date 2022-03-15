@@ -4,7 +4,7 @@ services:
   # Redis DB
   db:
     container_name: eyesuite_redis
-    image: redis:latest
+    image: redis:alpine
     volumes:
       - data:/data
     restart: always
