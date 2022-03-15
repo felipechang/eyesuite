@@ -19,6 +19,8 @@ type Controller interface {
 	UpsertProfiles(c *fiber.Ctx) error
 
 	ReadImageText(c *fiber.Ctx) error
+	ReadImageBarcode(c *fiber.Ctx) error
+	ReadImageQr(c *fiber.Ctx) error
 	PostImage(c *fiber.Ctx) error
 
 	ReadUsers(c *fiber.Ctx) error

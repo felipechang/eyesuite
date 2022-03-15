@@ -68,7 +68,29 @@ func prePlugin() {
 			Name:        "barcode-text",
 			Value:       "",
 			Placeholder: "",
+			Hidden:      true,
+			Readonly:    true,
+		}, {
+			LabelText:   "Barcode Result",
+			Name:        "barcode-type",
+			Value:       "",
+			Placeholder: "",
 			Hidden:      false,
+			Readonly:    false,
+		}},
+	})
+	x = append(x, storage.Plugin{
+		Name:          "QR Reader",
+		Description:   "Reads QR codes as text",
+		Endpoint:      "api/plugins/readQr",
+		EndpointField: "qr-text",
+		Enabled:       true,
+		Mapping: []storage.ProfileMapping{{
+			LabelText:   "QR Result",
+			Name:        "qr-text",
+			Value:       "",
+			Placeholder: "",
+			Hidden:      true,
 			Readonly:    true,
 		}},
 	})

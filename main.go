@@ -90,6 +90,12 @@ func main() {
 	// Read image with Tesseract
 	app.Post("/api/plugins/readText", m.Auth, c.ReadImageText)
 
+	// Read barcodes
+	app.Post("/api/plugins/readBarcode", m.Auth, c.ReadImageBarcode)
+
+	// Read QR codes
+	app.Post("/api/plugins/readQr", m.Auth, c.ReadImageQr)
+
 	// Api root
 	app.Get("/api", c.ApiHome)
 
