@@ -30,6 +30,7 @@
                     <PasswordInput
                             bind:value={password}
                             labelText="Password"
+                            on:keyup={handleKeyPress}
                             placeholder="Enter password..."
                             required
                             type="password"
@@ -68,4 +69,11 @@
         localStorage.setItem("user", JSON.stringify({username: username, lastLogin: (new Date()).getTime()}));
         handleLogIn();
     }
+
+    const handleKeyPress = (e) => {
+        if (e.key === "Enter") {
+            handleServerLogin()
+        }
+    }
+
 </script>

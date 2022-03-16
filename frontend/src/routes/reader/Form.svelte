@@ -6,13 +6,23 @@
                     <Row>
                         <Column style="padding-bottom: 10px">
                             <span style="display: {field.hidden ? 'none' : 'initial'}">
-                               <TextInput
-                                       labelText="{field.labelText}"
-                                       name="{field.name}"
-                                       placeholder="{field.placeholder}"
-                                       bind:value="{field.value}"
-                                       readonly="{field.readonly}"
-                               />
+                                {#if field.list.length > 0}
+                                    <Select style="height: 200px" labelText="{field.labelText}" size="xl"
+                                            bind:selected="{field.value}">
+                                        <SelectItem text="" value=""/>
+                                        {#each field.list as list}
+                                            <SelectItem text="{list}" value="{list}"/>
+                                        {/each}
+                                    </Select>
+                                {:else}
+                                    <TextInput
+                                            labelText="{field.labelText}"
+                                            name="{field.name}"
+                                            placeholder="{field.placeholder}"
+                                            bind:value="{field.value}"
+                                            readonly="{field.readonly}"
+                                    />
+                                {/if}
                             </span>
                         </Column>
                     </Row>
@@ -45,7 +55,7 @@
 </Row>
 
 <script lang="ts">
-    import {Button, Column, FluidForm, Grid, Row, TextInput} from "carbon-components-svelte";
+    import {Button, Column, FluidForm, Grid, Row, Select, SelectItem, TextInput} from "carbon-components-svelte";
     import {readerStore} from "$lib/stores/reader";
     import {Upload16, WatsonHealthMagnify16} from "carbon-icons-svelte";
     import {errorStore} from "$lib/stores/error";
@@ -87,7 +97,14 @@
     }
 
     const handleImageRead = async () => {
-        let res = await readerStore.read(pluginLink, files);
+        let res = await readerStore.read(pluginLink, files, fields);
+        if (res.error) {
+            errorStore.set({
+                title: "Format error:",
+                error: res.msg
+            });
+            return;
+        }
         mappings = mappings.map((m) => {
             if (m.name === pluginField) {
                 m.value = res.msg;
@@ -96,3 +113,10 @@
         });
     }
 </script>
+
+<style>
+    :global(div.bx--select-input__wrapper) {
+        height: 120px;
+    }
+
+</style>

@@ -138,8 +138,14 @@ func (o *controller) ReadImageBarcode(c *fiber.Ctx) error {
 		codeReader = oned.NewEAN13Reader()
 	}
 	result, err := codeReader.Decode(bmp, nil)
+	if err != nil && err.Error() == "FormatException" {
+		return c.JSON(err.Error())
+	}
+	if err != nil && err.Error() == "NotFoundException" {
+		return c.JSON(err.Error())
+	}
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(result.GetText())
 }

@@ -3,3 +3,4 @@ eyesuite
 frontend/node_modules
 frontend/public/build
 frontend/.svelte-kit
+frontend/package-lock.json

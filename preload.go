@@ -65,21 +65,26 @@ func prePlugin() {
 		EndpointField: "barcode-text",
 		Enabled:       true,
 		Mapping: []storage.ProfileMapping{{
+			LabelText: "Barcode Type",
+			Name:      "barcode-type",
+			Value:     "",
+			List: []string{
+				"upca",
+				"upce",
+				"ean8",
+				"ean13",
+			},
+			Placeholder: "",
+			Hidden:      false,
+			Readonly:    false,
+		}, {
 			LabelText:   "Barcode Result",
 			Name:        "barcode-text",
 			Value:       "",
 			List:        []string{},
 			Placeholder: "",
-			Hidden:      true,
-			Readonly:    true,
-		}, {
-			LabelText:   "Barcode Result",
-			Name:        "barcode-type",
-			Value:       "",
-			List:        []string{},
-			Placeholder: "",
 			Hidden:      false,
-			Readonly:    false,
+			Readonly:    true,
 		}},
 	})
 	x = append(x, storage.Plugin{
@@ -94,7 +99,7 @@ func prePlugin() {
 			Value:       "",
 			List:        []string{},
 			Placeholder: "",
-			Hidden:      true,
+			Hidden:      false,
 			Readonly:    true,
 		}},
 	})
@@ -117,7 +122,7 @@ func preProfile() {
 	}
 	var x []storage.Profile
 	x = append(x, storage.Profile{
-		Name: "Upload a File",
+		Name: "Read and Upload image",
 		Template: `<add xmlns="urn:messages_{{.Version}}.platform.webservices.netsuite.com">
 					<record xsi:type="ns8:File" xmlns:ns8="urn:filecabinet_{{.Version}}.documents.webservices.netsuite.com">
 						<ns8:name xsi:type="xsd:string">{{.FileName}}</ns8:name>
@@ -133,10 +138,54 @@ func preProfile() {
 			Value:       "-10",
 			List:        []string{},
 			Placeholder: "Set Netsuite Folder",
-			Hidden:      false,
-			Readonly:    false,
+			Hidden:      true,
+			Readonly:    true,
 		}},
 		Plugin: "OCR Reader",
+	})
+	x = append(x, storage.Profile{
+		Name: "Read and Upload Barcode",
+		Template: `<add xmlns="urn:messages_{{.Version}}.platform.webservices.netsuite.com">
+					<record xsi:type="ns8:File" xmlns:ns8="urn:filecabinet_{{.Version}}.documents.webservices.netsuite.com">
+						<ns8:name xsi:type="xsd:string">{{.FileName}}</ns8:name>
+						<ns8:attachFrom xsi:type="ns9:FileAttachFrom" xmlns:ns9="urn:types.filecabinet_{{.Version}}.documents.webservices.netsuite.com">_computer</ns8:attachFrom>
+						<ns8:content>{{.FileContent}}</ns8:content>
+						<ns8:folder internalId="{{.folder}}" xsi:type="ns10:RecordRef" xmlns:ns10="urn:core_{{.Version}}.platform.webservices.netsuite.com"/>
+						<ns8:description xsi:type="xsd:string">{{.barcode-text}}</ns8:description>
+					</record>
+				</add>`,
+		Mapping: []storage.ProfileMapping{{
+			LabelText:   "NetSuite Folder",
+			Name:        "folder",
+			Value:       "-10",
+			List:        []string{},
+			Placeholder: "Set Netsuite Folder",
+			Hidden:      true,
+			Readonly:    true,
+		}},
+		Plugin: "Barcode Reader",
+	})
+	x = append(x, storage.Profile{
+		Name: "Read and Upload QR",
+		Template: `<add xmlns="urn:messages_{{.Version}}.platform.webservices.netsuite.com">
+					<record xsi:type="ns8:File" xmlns:ns8="urn:filecabinet_{{.Version}}.documents.webservices.netsuite.com">
+						<ns8:name xsi:type="xsd:string">{{.FileName}}</ns8:name>
+						<ns8:attachFrom xsi:type="ns9:FileAttachFrom" xmlns:ns9="urn:types.filecabinet_{{.Version}}.documents.webservices.netsuite.com">_computer</ns8:attachFrom>
+						<ns8:content>{{.FileContent}}</ns8:content>
+						<ns8:folder internalId="{{.folder}}" xsi:type="ns10:RecordRef" xmlns:ns10="urn:core_{{.Version}}.platform.webservices.netsuite.com"/>
+						<ns8:description xsi:type="xsd:string">{{.qr-text}}</ns8:description>
+					</record>
+				</add>`,
+		Mapping: []storage.ProfileMapping{{
+			LabelText:   "NetSuite Folder",
+			Name:        "folder",
+			Value:       "-10",
+			List:        []string{},
+			Placeholder: "Set Netsuite Folder",
+			Hidden:      true,
+			Readonly:    true,
+		}},
+		Plugin: "QR Reader",
 	})
 	_, err = sto.UpsertProfiles(x)
 	if err != nil {

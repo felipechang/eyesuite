@@ -32,6 +32,10 @@ function createStore() {
 
             // call for new token
             const response = await postServer("/api/refresh", "");
+            if (response.status === 401) {
+                localStorage.removeItem("auth");
+                throw new Error("could not refresh token")
+            }
             const data = await response.json();
             const tokens = auth ? JSON.parse(auth) : {"control": "", "access_token": "", "refresh_token": ""};
             tokens.access_token = data.access_token;

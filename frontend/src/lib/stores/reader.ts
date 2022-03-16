@@ -6,25 +6,36 @@ interface ISubmit {
     msg: string
 }
 
-const read = async (link: string, file: File): Promise<ISubmit> => {
+const read = async (link: string, file: File, fields: { name: string, value: string }[]): Promise<ISubmit> => {
     const formData = new FormData()
     formData.append("file", file);
+    for (let i = 0; i < fields.length; i++) {
+        formData.append(fields[i].name, fields[i].value);
+    }
     const headers = makeHeaders();
     const response = await fetch(link, {
         headers: headers,
         method: 'POST',
-        body: formData
+        body: formData,
     });
     if (response.status === 401) {
         localStorage.removeItem("auth");
         await loginStore.refresh();
-        return read(link, file);
+        return read(link, file, fields);
     }
     // invalid credentials
     if (response.status === 400) {
         return {
             error: true,
             msg: "Invalid NetSuite credentials. Please contact your administrator."
+        };
+    }
+    const evalResponse = await response.clone();
+    const evalMsg = await evalResponse.json();
+    if (evalMsg === "NotFoundException" || evalMsg === "FormatException") {
+        return {
+            error: true,
+            msg: "Incorrect barcode type"
         };
     }
     return {error: false, msg: await response.json()};

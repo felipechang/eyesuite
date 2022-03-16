@@ -10,13 +10,13 @@
                     on:close={handleMessageClose}
             />
         {/if}
-        {#if avatar}
-            <ImageLoader fadeIn src="{avatar}"/>
-        {:else}
-            <div on:click={fileClick} style="text-align: center">
+        <div on:click={fileClick} style="text-align: center">
+            {#if avatar}
+                <img style="max-width: 500px" src="{avatar}" alt="Avatar"/>
+            {:else}
                 <CameraPic style="cursor: pointer"/>
-            </div>
-        {/if}
+            {/if}
+        </div>
     </Column>
     <Column/>
 </Row>
@@ -30,7 +30,7 @@
 
 <script>
     import CameraPic from "carbon-pictograms-svelte/lib/Camera.svelte";
-    import {Column, ImageLoader, InlineNotification, Row} from "carbon-components-svelte";
+    import {Column, InlineNotification, Row} from "carbon-components-svelte";
 
     export let files;
     export let success;
@@ -55,6 +55,7 @@
         if (!files) {
             return;
         }
+        avatar = "";
         let reader = new FileReader();
         reader.readAsDataURL(files);
         reader.onload = (e) => {
